@@ -5,10 +5,17 @@
     <script type="text/javascript" src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
     <script type="text/javascript" src="{% static "main.js" %}"></script>
     <script type="text/javascript">
-     for(let key in chp_build) { window[key] = chp_build[key]};
+    /*
+      for(let key in chp_build) { window[key] = chp_build[key]};
+    */
     </script>
   </head>
   <body>
-    {{ form.render }}
+    <form action="{% url 'blog:post_create' %}" method="post">
+    {% csrf_token %}
+    {{ form }}
+    {#  {{ form.render }}  #}
+    <input type="submit" value="Post">
+    </form>
   </body>
 </html>

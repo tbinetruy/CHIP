@@ -1,4 +1,5 @@
-from chp.chp import *
+from chp.components import *
+from chp.store import (create_store, render_app)
 
 
 def SubmitButton(name, on_click):
@@ -49,10 +50,10 @@ def FormSchema(store_content, store_content_json):
                     ],
                 ),
                 Div(
-                    [create_prop("style", "height: 5rem")],
+                    [cp("style", "height: 5rem")],
                     "If you type <strong>foo</strong> in the textbox and unfocus, your secret message will appear !!"
                 ),
-                Div([create_prop("id", "demo"), create_prop("style", "color: red" if store_content["name"] == "foo" else "color: green")], "what color am I ?"),
+                Div([cp("id", "demo"), cp("style", "color: red" if store_content["name"] == "foo" else "color: green")], "what color am I ?"),
             ])
         ])
 
