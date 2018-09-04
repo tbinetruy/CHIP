@@ -15,6 +15,7 @@ INSTALLED_APPS = [
     'chp.django',  # management command
     'chp.django.example.blog',
     'chp.django.example.todos',
+    'crudlfap',
 ]
 
 DATABASES = {
