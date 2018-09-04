@@ -145,7 +145,7 @@ def render_html(el, props, child):
     for p in props:
         if p["name"] != "children":
             # props_str += (p["name"] + "=\"" + p["value"] + "\"")
-            props_str += f"{p['name']}={QUOT}{p['value']}{QUOT}"
+            props_str += f" {p['name']}={QUOT}{p['value']}{QUOT}"
 
     self_closing_tags = ["input", "link", "img"]
     if name in self_closing_tags:
