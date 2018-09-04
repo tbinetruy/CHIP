@@ -56,7 +56,8 @@ def MdcLineRipple():
 
 def MdcTextField(id, label, value):
     props = [
-        cp("class", "mdc-text-field")
+        cp("class", "mdc-text-field"),
+        cp("data-mdc-auto-init", "MDCTextField"),
     ]
     children = [
         MdcInput(id, value),
@@ -100,7 +101,7 @@ def FormSchema(store_content, store_content_json):
 #         todos = []
 #         for t in store_content["todos"]:
 #             todos.append(TodoItem(t["name"], t["id"]))
-# 
+#
 #         return Div(
 #             [],
 #             [
