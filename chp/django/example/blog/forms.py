@@ -6,12 +6,13 @@ from chp.components import *
 from chp.pyreact import (
     context_middleware, inject_ids, render_element
 )
-from chp.store import (Inject_ast_into_DOM, render_app)
+from chp.store import (create_store, Inject_ast_into_DOM, render_app)
 
-from chp.django.example.todos.components import *
-
+from chp.django.example.blog.components import *
 
 from .models import Post
+from .components import MdcCheckbox
+
 
 class PostForm(forms.ModelForm):
 
@@ -24,47 +25,46 @@ class PostForm(forms.ModelForm):
         # def add_todos():
         #     return f"store_updates.add_todo({store_name})"
 
-        def render():
+        def render(self, *args, **kwargs):
+
             form = Form([
                 Cell([
                     Div(
                         [cp("style", "display: flex;")],
                         [
-                            Input(store_content["name"]),
-                            SubmitButton("Submit", add_todos()),
+                            MdcCheckbox(self["checkbox"]),
+                            # MdcTextField(self.fields["test"]),
+                            # MdcDateField(self.fields["date"]),
+                            # MdcSelect(self.fields["foreignkey"]),
                         ],
                     ),
-                    Div(
-                        [cp("style", "height: 5rem")],
-                        "If you type <strong>foo</strong> in the textbox and unfocus, your secret message will appear !!"
-                    ),
-                    Div([cp("id", "demo"), cp("style", "color: red" if store_content["name"] == "foo" else "color: green")], "what color am I ?"),
                 ])
             ])
 
-            todos = []
-            for t in store_content["todos"]:
-                todos.append(TodoItem(t["name"], t["id"]))
-
             return Div(
                 [],
+                    # output = super(ModelForm, self).render(value)
                 [
-                    Script(create_store(store_name, store_change_cb, store_content_json)),
+                    # Script(create_store(store_name,
+                    #                     store_change_cb,
+                    #                     store_content_json)),
                     form,
-                    Div([], todos),
+                    # Div([], todos),
                 ],
             )
 
-        return render()
+        return render(self)
 
     def render(self):
-        import json
-        ast = FormSchema(store, json.dumps(store))
-        form = inject_ids(ast)
-        app = Inject_ast_into_DOM(form, json.dumps(form))
-        html = render_element(app, context_middleware(ctx))
-        print(html)
-        print(form)
+
+        ctx = {}  # perhaps a hidden field on the form?
+
+        ast = self.FormSchema()
+        form = inject_ids(ast, context_middleware(ctx))
+#         app = Inject_ast_into_DOM(form, json.dumps(form))
+#         html = render_element(app, context_middleware(ctx))
+        html = render_element(form, context_middleware(ctx))
+
         return mark_safe(html)
 
     class Meta:

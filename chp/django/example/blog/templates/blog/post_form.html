@@ -8,6 +8,8 @@
     <form action="{% url 'blog:post_create' %}" method="post">
     {% csrf_token %}
 
+    {{ form.render }}
+
     <div class="mdc-form-field mdc-form-field--align-end" data-mdc-auto-init="MDCFormField">
       <div class="mdc-checkbox" data-mdc-auto-init="MDCCheckbox">
         <input type="checkbox" class="mdc-checkbox__native-control"/>

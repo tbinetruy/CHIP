@@ -142,10 +142,14 @@ def render_html(el, props, child):
 
     props_str = ""
     QUOT = "\""  # like &quot;
-    for p in props:
-        if p["name"] != "children":
-            # props_str += (p["name"] + "=\"" + p["value"] + "\"")
-            props_str += f" {p['name']}={QUOT}{p['value']}{QUOT}"
+
+    def render_prop(prop):
+        if prop['value'] == "":
+            return prop['name']
+        return f"{prop['name']}={QUOT}{prop['value']}{QUOT}"
+
+    props_str = ' '.join([render_prop(p)
+                          for p in props if p["name"] != "children"])
 
     self_closing_tags = ["input", "link", "img"]
     if name in self_closing_tags:
