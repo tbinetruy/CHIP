@@ -1,5 +1,6 @@
 from django import forms
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 
 # from chp import chp
 from chp.components import *
@@ -10,11 +11,18 @@ from chp.store import (create_store, Inject_ast_into_DOM, render_app)
 
 from chp.django.example.blog.components import *
 
+from .components import (MdcCheckbox, MdcTextField)
 from .models import Post
-from .components import MdcCheckbox
 
 
 class PostForm(forms.ModelForm):
+
+    class Meta:
+        model = Post
+        fields = "__all__"
+        labels = {
+            'checkbox': _("This is my checkbox"),
+            'text': _("Input Label")}
 
     def FormSchema(self, *args, **kwargs):
         # store_name = "todoStore"
@@ -33,7 +41,7 @@ class PostForm(forms.ModelForm):
                         [cp("style", "display: flex;")],
                         [
                             MdcCheckbox(self["checkbox"]),
-                            # MdcTextField(self.fields["test"]),
+                            MdcTextField(self["text"]),
                             # MdcDateField(self.fields["date"]),
                             # MdcSelect(self.fields["foreignkey"]),
                         ],
@@ -66,7 +74,3 @@ class PostForm(forms.ModelForm):
         html = render_element(form, context_middleware(ctx))
 
         return mark_safe(html)
-
-    class Meta:
-        model = Post
-        exclude = []
