@@ -30,6 +30,16 @@ using the template engine:
             attrs=attrs,
             renderer=self.form.renderer,
         )
+
+    def build_widget_attrs(self, attrs, widget=None):
+        widget = widget or self.field.widget
+        attrs = dict(attrs)  # Copy attrs to avoid modifying the argument.
+        if widget.use_required_attribute(self.initial) and self.field.required and self.form.use_required_attribute:
+            attrs['required'] = True
+        if self.field.disabled:
+            attrs['disabled'] = True
+        return attrs
+
 We need to use similar to get the attrs for 'required', etc.
 
 Alternatively, create custom MdcWidgets and override the widget.render()?
@@ -75,8 +85,13 @@ def MdcCheckbox(field):
 
 
 def MdcInput(field):
+    if field.mdc_type == "MDCDateField":
+        input_type = "date"
+    else:
+        input_type = "text"
+
     props = [
-        cp("type", field.field.widget.input_type),
+        cp("type", input_type),
         cp("id", field.auto_id),
         cp("class", "mdc-text-field__input"),
     ]
@@ -113,7 +128,8 @@ def MdcLineRipple():
 
 
 def MdcTextField(field):
-    field.mdc_type = 'MDCTextField'
+    if not hasattr(field, 'mdc_type'):
+        field.mdc_type = 'MDCTextField'
     # ctx = field.field.widget.get_context(field.name, field.value(), None)
 
     props = [
@@ -126,6 +142,12 @@ def MdcTextField(field):
         MdcLineRipple(),
     ]
     return Div(props, children)
+
+
+def MdcDateField(field):
+    if not hasattr(field, 'mdc_type'):
+        field.mdc_type = 'MDCDateField'
+    return MdcTextField(field)
 
 
 def SubmitButton(name, on_click):

@@ -22,7 +22,9 @@ class PostForm(forms.ModelForm):
         fields = "__all__"
         labels = {
             'checkbox': _("This is my checkbox"),
-            'text': _("Input Label")}
+            'text': _("Input Label"),
+            'date': _("Type = date"),
+        }
 
     def FormSchema(self, *args, **kwargs):
         # store_name = "todoStore"
@@ -42,6 +44,7 @@ class PostForm(forms.ModelForm):
                         [
                             MdcCheckbox(self["checkbox"]),
                             MdcTextField(self["text"]),
+                            MdcDateField(self["date"]),
                             # MdcDateField(self.fields["date"]),
                             # MdcSelect(self.fields["foreignkey"]),
                         ],
