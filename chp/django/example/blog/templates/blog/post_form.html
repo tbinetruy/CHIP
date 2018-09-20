@@ -7,10 +7,8 @@
   <body>
     <form action="{% url 'blog:post_create' %}" method="post">
     {% csrf_token %}
-    
-    {{ form }}
 
-    {{ form.render }}
+    {{ form }}
 
     <div class="mdc_layout_grid__cell">
     <div style="display: flex;">

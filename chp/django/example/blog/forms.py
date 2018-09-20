@@ -15,7 +15,6 @@ from .models import Post
 
 
 class PostForm(forms.ModelForm):
-
     class Meta:
         model = Post
         fields = "__all__"
@@ -30,7 +29,7 @@ class PostForm(forms.ModelForm):
         # store_change_cb = [
         #     render_app(store_name, store_content_json),
         # ]
-        # 
+        #
         # def add_todos():
         #     return f"store_updates.add_todo({store_name})"
 

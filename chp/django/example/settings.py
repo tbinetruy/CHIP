@@ -1,6 +1,6 @@
 import os
 
-# FORM_RENDERER = 'chp.django.mdc.renderer.FormRenderer'
+FORM_RENDERER = 'chp.django.engine.ComponentEngine'
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'notsecret')
 DEBUG = os.getenv('DEBUG', False)
@@ -39,6 +39,15 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 TEMPLATES = [
+    # {
+    #     'BACKEND': 'chp.django.engine.ComponentEngine',
+    #     'NAME': 'chp',
+    #     'DIRS': [],
+    #     'APP_DIRS': True,
+    #     'OPTIONS': {
+    #         'test': True,
+    #     },
+    # },
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],
@@ -52,5 +61,4 @@ TEMPLATES = [
             ],
         },
     },
-
 ]

@@ -54,7 +54,7 @@ Alternatively, create custom MdcWidgets and override the widget.render()?
 Refactor functions here to classes to support code reuse.
 """
 
-
+'''
 class ChpWidgetMixin:
     chp_widget = None
 
@@ -105,6 +105,32 @@ class MdcCheckboxInput(ChpWidgetMixin, CheckboxInput):
                     MdcLabelWidget(context)
                     ]
         return MdcFormField([], children)
+'''
+
+def MdcCheckboxWidget(context):
+    props = [
+        cp("class", "mdc-checkbox"),
+        cp("data-mdc-auto-init", "MDCCheckbox"),
+    ]
+    children = [
+        ce("input", [
+            cp("id", context['widget']['attrs']['id']),
+            cp("type", context['widget']['type']),
+            cp("class", "mdc-checkbox__native-control"),
+            cp("checked"
+               if context['widget']['attrs']['checked'] else "", ""),
+            ],
+            []
+           ),
+        Div([cp("class", "mdc-checkbox__background")],
+            []
+            ),
+    ]
+    checkbox = Div(props, children)
+    children = [checkbox,
+                MdcLabelWidget(context)
+                ]
+    return MdcFormField([], children)
 
 
 def MdcCheckbox(field):
@@ -117,7 +143,7 @@ def MdcCheckbox(field):
     if label_suffix and contents and contents[-1] not in _(':?.!'):
         label = format_html('{}{}', contents, label_suffix)
 
-    return field.as_widget(MdcCheckboxInput(label=label))
+    return field.as_widget()
 
 
 def MdcFormField(props, children):
