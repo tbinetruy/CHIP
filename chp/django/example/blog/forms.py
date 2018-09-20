@@ -9,10 +9,8 @@ from chp.pyreact import (
 )
 from chp.store import (create_store, Inject_ast_into_DOM, render_app)
 
-from chp.django.example.blog.components import *
-
 from .components import (
-    MdcCheckbox, MdcTextField)
+    MdcCheckbox, MdcDateField, MdcTextField)
 from .models import Post
 
 
@@ -43,12 +41,10 @@ class PostForm(forms.ModelForm):
                     Div(
                         [cp("style", "display: flex;")],
                         [
-                            # MdcCheckboxF(self["checkbox"]),
-                            MdcCheckbox(self, self["checkbox"]),
+                            MdcCheckbox(self["checkbox"]),
                             MdcTextField(self["text"]),
                             MdcDateField(self["date"]),
-                            # MdcDateField(self.fields["date"]),
-                            # MdcSelect(self.fields["foreignkey"]),
+                            # MdcSelect(self["foreignkey"]),
                         ],
                     ),
                 ])
@@ -56,7 +52,6 @@ class PostForm(forms.ModelForm):
 
             return Div(
                 [],
-                    # output = super(ModelForm, self).render(value)
                 [
                     # Script(create_store(store_name,
                     #                     store_change_cb,

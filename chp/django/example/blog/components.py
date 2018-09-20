@@ -55,15 +55,17 @@ Refactor functions here to classes to support code reuse.
 """
 
 
-class MdcCheckboxInput(CheckboxInput):
-    def __init__(self, attrs=None):
+class ChpWidgetMixin:
+    chp_widget = None
+
+    def __init__(self, attrs=None, **kwargs):
+        self.label = kwargs.pop("label", None)
         if attrs is not None:
             attrs = attrs.copy()
-            self.label = attrs.pop('label', "")
         super().__init__(attrs)
 
     def render(self, name, value, attrs=None, renderer=None):
-        """Render the widget as an HTML string."""
+        """Build a context and render the widget as a component."""
         context = self.get_context(name, value, attrs)
         context['widget'].update(
             {'label': self.label,
@@ -71,7 +73,51 @@ class MdcCheckboxInput(CheckboxInput):
                 self.id_for_label(context['widget']['attrs']['id'])
              })
         # return self._render(self.template_name, context, renderer)
-        return MdcCheckboxWidget(context)
+        return self.chp_render(context)
+
+    def chp_render(self, context):
+        raise NotImplementedError
+
+
+class MdcCheckboxInput(ChpWidgetMixin, CheckboxInput):
+
+    def chp_render(self, context):
+        props = [
+            cp("class", "mdc-checkbox"),
+            cp("data-mdc-auto-init", "MDCCheckbox"),
+        ]
+        children = [
+            ce("input", [
+                cp("id", context['widget']['attrs']['id']),
+                cp("type", context['widget']['type']),
+                cp("class", "mdc-checkbox__native-control"),
+                cp("checked"
+                   if context['widget']['attrs']['checked'] else "", ""),
+                ],
+                []
+               ),
+            Div([cp("class", "mdc-checkbox__background")],
+                []
+                ),
+        ]
+        checkbox = Div(props, children)
+        children = [checkbox,
+                    MdcLabelWidget(context)
+                    ]
+        return MdcFormField([], children)
+
+
+def MdcCheckbox(field):
+    # code taken from Boundfield.label_tag()
+    label_suffix = (field.field.label_suffix
+                    if field.field.label_suffix is not None
+                    else (field.form.label_suffix
+                          if hasattr(field, "form") else ""))
+    contents = field.label
+    if label_suffix and contents and contents[-1] not in _(':?.!'):
+        label = format_html('{}{}', contents, label_suffix)
+
+    return field.as_widget(MdcCheckboxInput(label=label))
 
 
 def MdcFormField(props, children):
@@ -80,75 +126,6 @@ def MdcFormField(props, children):
         cp("data-mdc-auto-init", "MDCFormField"),
     ]
     return Div(props, children)
-
-
-def MdcCheckboxWidget(context):
-    # widget.mdc_type = 'MDCCheckbox'
-
-    props = [
-        cp("class", "mdc-checkbox"),
-        cp("data-mdc-auto-init", "MDCCheckbox"),
-    ]
-    children = [
-        ce("input", [
-            cp("id", context['widget']['attrs']['id']),
-            cp("type", context['widget']['type']),
-            cp("class", "mdc-checkbox__native-control"),
-            cp("checked"
-               if context['widget']['attrs']['checked'] else "", ""),
-            ],
-            []
-           ),
-        Div([cp("class", "mdc-checkbox__background")],
-            []
-            ),
-    ]
-    print(context['widget']['value'])
-    checkbox = Div(props, children)
-    children = [checkbox,
-                MdcLabelWidget(context)
-                ]
-    return MdcFormField([], children)
-
-
-def MdcCheckbox(form, field):
-    # code taken from Boundfield.label_tag()
-    label_suffix = (field.field.label_suffix
-                    if field.field.label_suffix is not None
-                    else form.label_suffix)
-    contents = field.label
-    if label_suffix and contents and contents[-1] not in _(':?.!'):
-        label = format_html('{}{}', contents, label_suffix)
-
-    return field.as_widget(MdcCheckboxInput(
-                               {'label': label})
-                           )
-
-    field.mdc_type = 'MDCCheckbox'
-
-    props = [
-        cp("class", "mdc-checkbox"),
-        cp("data-mdc-auto-init", "MDCCheckbox"),
-    ]
-    children = [
-        ce("input", [
-            cp("id", field.auto_id),
-            cp("type", "checkbox"),
-            cp("class", "mdc-checkbox__native-control"),
-            cp("checked" if field.value() else "", ""),
-            ],
-            []
-           ),
-        Div([cp("class", "mdc-checkbox__background")],
-            []
-            ),
-    ]
-    print(field.value())
-    checkbox = Div(props, children)
-    children = [checkbox,
-                MdcLabel(field)
-                ]
-    return MdcFormField([], children)
 
 
 def MdcInput(field):

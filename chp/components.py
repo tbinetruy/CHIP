@@ -6,8 +6,11 @@ def Div(props, children):
     return ce('div', props, children)
 
 def Button(props, children):
+    props = props or []
+    props.append(
+        cp('type', 'button'))
     children = children or []
-    return ce('div', props, children)
+    return ce('button', props, children)
 
 def Script(string = ""):
     return ce('script', [], string)
