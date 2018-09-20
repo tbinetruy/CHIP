@@ -12,6 +12,9 @@
 
     {{ form.render }}
 
+    <div class="mdc_layout_grid__cell">
+    <div style="display: flex;">
+
     <div class="mdc-form-field mdc-form-field--align-end" data-mdc-auto-init="MDCFormField">
       <div class="mdc-checkbox" data-mdc-auto-init="MDCCheckbox">
         <input type="checkbox" class="mdc-checkbox__native-control"/>
@@ -55,7 +58,8 @@
       <label class="mdc-floating-label">Pick a Food Group</label>
       <div class="mdc-line-ripple"></div>
     </div>
-
+    </div>
+    </div>
     {# {{ form.render }} #}
     <script type="text/javascript" src="{% static "output.js" %}"></script>
     <script>window.mdc.autoInit();</script>

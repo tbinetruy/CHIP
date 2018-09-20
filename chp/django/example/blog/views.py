@@ -10,5 +10,7 @@ class PostCreateView(generic.CreateView):
 
     def get_initial(self):
         initial = super(PostCreateView, self).get_initial()
-        initial.update({'checkbox': True})
+        initial.update({'checkbox': True,
+                        'text': 'Initial value',
+                        })
         return initial

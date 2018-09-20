@@ -195,7 +195,8 @@ def render_ast(ast, ast_middleware, render_middleware):
     child = []
     if not children:
         child = ""
-    elif type(children) is str:
+    # capture regular and SafeText strings
+    elif isinstance(children, str):
         child = children
     else:
         for c in children:

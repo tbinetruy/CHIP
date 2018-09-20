@@ -11,7 +11,8 @@ from chp.store import (create_store, Inject_ast_into_DOM, render_app)
 
 from chp.django.example.blog.components import *
 
-from .components import (MdcCheckbox, MdcTextField)
+from .components import (
+    MdcCheckbox, MdcTextField)
 from .models import Post
 
 
@@ -42,7 +43,8 @@ class PostForm(forms.ModelForm):
                     Div(
                         [cp("style", "display: flex;")],
                         [
-                            MdcCheckbox(self["checkbox"]),
+                            # MdcCheckboxF(self["checkbox"]),
+                            MdcCheckbox(self, self["checkbox"]),
                             MdcTextField(self["text"]),
                             MdcDateField(self["date"]),
                             # MdcDateField(self.fields["date"]),

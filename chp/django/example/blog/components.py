@@ -1,3 +1,10 @@
+from django.forms.boundfield import BoundField
+from django.forms.widgets import Widget, TextInput, CheckboxInput
+from django.utils.functional import Promise
+from django.utils.html import conditional_escape, format_html
+from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
+
 from chp.components import *
 from chp.store import (create_store, render_app)
 
@@ -48,6 +55,25 @@ Refactor functions here to classes to support code reuse.
 """
 
 
+class MdcCheckboxInput(CheckboxInput):
+    def __init__(self, attrs=None):
+        if attrs is not None:
+            attrs = attrs.copy()
+            self.label = attrs.pop('label', "")
+        super().__init__(attrs)
+
+    def render(self, name, value, attrs=None, renderer=None):
+        """Render the widget as an HTML string."""
+        context = self.get_context(name, value, attrs)
+        context['widget'].update(
+            {'label': self.label,
+             'id_for_label':
+                self.id_for_label(context['widget']['attrs']['id'])
+             })
+        # return self._render(self.template_name, context, renderer)
+        return MdcCheckboxWidget(context)
+
+
 def MdcFormField(props, children):
     props = [
         cp("class", "mdc-form-field mdc-form-field--align-end"),
@@ -56,7 +82,48 @@ def MdcFormField(props, children):
     return Div(props, children)
 
 
-def MdcCheckbox(field):
+def MdcCheckboxWidget(context):
+    # widget.mdc_type = 'MDCCheckbox'
+
+    props = [
+        cp("class", "mdc-checkbox"),
+        cp("data-mdc-auto-init", "MDCCheckbox"),
+    ]
+    children = [
+        ce("input", [
+            cp("id", context['widget']['attrs']['id']),
+            cp("type", context['widget']['type']),
+            cp("class", "mdc-checkbox__native-control"),
+            cp("checked"
+               if context['widget']['attrs']['checked'] else "", ""),
+            ],
+            []
+           ),
+        Div([cp("class", "mdc-checkbox__background")],
+            []
+            ),
+    ]
+    print(context['widget']['value'])
+    checkbox = Div(props, children)
+    children = [checkbox,
+                MdcLabelWidget(context)
+                ]
+    return MdcFormField([], children)
+
+
+def MdcCheckbox(form, field):
+    # code taken from Boundfield.label_tag()
+    label_suffix = (field.field.label_suffix
+                    if field.field.label_suffix is not None
+                    else form.label_suffix)
+    contents = field.label
+    if label_suffix and contents and contents[-1] not in _(':?.!'):
+        label = format_html('{}{}', contents, label_suffix)
+
+    return field.as_widget(MdcCheckboxInput(
+                               {'label': label})
+                           )
+
     field.mdc_type = 'MDCCheckbox'
 
     props = [
@@ -81,7 +148,7 @@ def MdcCheckbox(field):
     children = [checkbox,
                 MdcLabel(field)
                 ]
-    return MdcFormField(props, children)
+    return MdcFormField([], children)
 
 
 def MdcInput(field):
@@ -114,13 +181,32 @@ def MdcInput(field):
 
 def MdcLabel(field):
     props = [
-        cp("for", field.auto_id),
+        cp("for", field.id_for_label),
     ]
     if field.mdc_type not in ['MDCCheckbox']:
         props.append(cp("class", "mdc-floating-label"))
 
+    label = field.label
     # cast gettext_lazy strings so they are recognised by AST renderer
-    return ce("label", props, str(field.label))
+    if isinstance(label, Promise):
+        label = conditional_escape(label)
+
+    return ce("label", props, label)
+
+
+def MdcLabelWidget(context):
+    props = [
+        cp("for", context['widget']['id_for_label']),
+    ]
+    if context['widget']['type'] not in ['checkbox']:
+        props.append(cp("class", "mdc-floating-label"))
+
+    label = context['widget']['label']
+    # render gettext_lazy strings so they are recognised by AST renderer
+    if isinstance(label, Promise):
+        label = str(label)
+
+    return ce("label", props, label)
 
 
 def MdcLineRipple():
@@ -141,7 +227,11 @@ def MdcTextField(field):
         MdcLabel(field),
         MdcLineRipple(),
     ]
-    return Div(props, children)
+    textfield = Div(props, children)
+    children = [textfield,
+                MdcLabel(field)
+                ]
+    return MdcFormField([], children)
 
 
 def MdcDateField(field):
